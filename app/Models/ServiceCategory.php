@@ -20,12 +20,13 @@ class ServiceCategory extends Model
     // {
     //     return $this->hasMany(Service::class, 'category_id');
     // }
+
     public function services()
     {
-        
+
         return $this->hasMany(Service::class, 'category_id')
             ->where('is_active', true)
-           
+
             ->select([
                 'id',
                 'category_id',

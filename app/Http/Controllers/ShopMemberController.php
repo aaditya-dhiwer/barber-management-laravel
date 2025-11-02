@@ -30,14 +30,19 @@ class ShopMemberController extends Controller
         }
     }
 
-    public function store(Request $request, $shopId)
+    public function store(Request $request)
     {
         try {
             DB::beginTransaction();
-            $shop = Shop::findOrFail($shopId);
 
-            if (Gate::denies('isOwner') || auth()->id() !== $shop->owner_id) {
+            $user = auth()->user();
+
+            if (Gate::denies('isOwner')) {
                 return response()->json(['message' => 'Unauthorized', "status" => false], 403);
+            }
+            $shop = Shop::where('owner_id', $user->id)->first();   
+            if (!$shop) {
+                return response()->json(['message' => 'Shop not found', "status" => false], 404);
             }
 
             $request->validate([
@@ -47,7 +52,10 @@ class ShopMemberController extends Controller
                 'member.*specialty' => 'nullable|string',
                 'member.*phone' => 'nullable|string|max:15',
                 'member.*bio' => 'nullable|string',
-                'role' => ['nullable', Rule::in(['staff', 'manager', 'admin'])],
+                'member.*dob' => 'nullable',
+                'member.*receive_sms_promotions' => 'nullable|boolean',
+                'member.*receive_email_promotions' => 'nullable|boolean',
+                'role' => ['nullable', Rule::in(['staff', 'manager', 'owner'])],
 
             ]);
 
@@ -60,6 +68,9 @@ class ShopMemberController extends Controller
                     'phone' => $memberData['phone'] ?? null,
                     'bio' => $memberData['bio'] ?? null,
                     'role' => $request->input('role', 'staff'),
+                    'dob' => $memberData['dob'] ?? null,
+                    'receive_sms_promotions' => $memberData['receive_sms_promotions'] ?? true,
+                    'receive_email_promotions' => $memberData['receive_email_promotions'] ?? true
                 ];
 
                 if ($request->hasFile("member.$index.profile_image")) {

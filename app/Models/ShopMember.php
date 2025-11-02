@@ -15,7 +15,20 @@ class ShopMember extends Model
         "phone",
         "bio",
         'role',
+        'dob',
+        'receive_sms_promotions',
+        'receive_email_promotions',
         'is_active'
+    ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        "receive_sms_promotions",
+        "receive_email_promotions",
+    ];
+    protected $casts = [
+        'receive_sms_promotions' => 'boolean',
+        'receive_email_promotions' => 'boolean',
     ];
 
     public function shop()

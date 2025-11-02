@@ -19,7 +19,10 @@ return new class extends Migration
             $table->string('specialty')->nullable();
             $table->string('phone')->nullable();
             $table->text("bio")->nullable();
-            $table->string('role')->default('staff');
+            $table->enum("role", ['owner', 'staff', 'manager'])->default('staff');
+            $table->date("dob")->nullable(); // Date of Birth
+            $table->boolean("receive_sms_promotions")->default(true);
+            $table->boolean("receive_email_promotions")->default(true);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

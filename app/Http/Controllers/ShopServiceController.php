@@ -95,7 +95,7 @@ class ShopServiceController extends Controller
             // After service successfully created changed the current_step of shop to 2
             // Update current_step only if not already completed
             if ($shop->current_step < 5) {
-                $shop->current_step = 4;
+                $shop->current_step = 2;
                 $shop->save();
             }
             DB::commit();

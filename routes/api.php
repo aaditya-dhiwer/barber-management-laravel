@@ -22,6 +22,7 @@ Route::post('/owner-login', [AuthController::class, 'ownerLogin']);
 // Route::apiResource('shops', ShopController::class);
 
 Route::get('/services/full_menu', [ServiceController::class, 'getFullMenu']);
+Route::get('/get-all-shops', [ShopController::class, 'getAllShopForUsers']);
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -30,21 +31,25 @@ Route::middleware('auth:sanctum')->group(function () {
     // Owner routes
     Route::middleware('can:isOwner')->group(function () {
         Route::apiResource('shops', ShopController::class);
+        Route::get('get-current-step', [ShopController::class, 'getCurrentShopStatus']);
 
+        Route::post('approve/{shopId}', [ShopController::class, 'approvedShop']);
+        Route::apiResource('shops/members', ShopMemberController::class);
         Route::prefix('shops/{shop}')->group(function () {
-            Route::apiResource('members', ShopMemberController::class);
             Route::apiResource('bookings', BookingController::class);
         });
 
         Route::post('/services', [ServiceController::class, 'store']);
         Route::apiResource('/shop-services', ShopServiceController::class);
+
+        Route::get('/get-owner-bookings', [BookingController::class, 'getOwnerBookings']);
     });
 
-    // // Customer routes
-    // Route::middleware('can:isCustomer')->group(function () {
-    //     Route::get('/shops/nearest', [ShopController::class, 'nearest']);
-    //     Route::post('/bookings', [BookingController::class, 'store']);
-    //     Route::get('/bookings', [BookingController::class, 'index']);
-    //     Route::get('/bookings/{booking}', [BookingController::class, 'show']);
-    // });
+    // Customer routes
+    Route::middleware('can:isCustomer')->group(function () {
+        Route::get('/shops/nearest', [ShopController::class, 'nearest']);
+        // Route::apiResource('/bookings', BookingController::class);
+        Route::post('/bookings', [BookingController::class, 'store']);
+        Route::get('/get-customer-bookings', [BookingController::class, 'getCustomerBookings']);
+    });
 });

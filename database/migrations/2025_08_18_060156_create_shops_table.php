@@ -28,7 +28,7 @@ return new class extends Migration
             $table->time('close');
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(false);
-            $table->string('status')->default('pending');
+            $table->enum("status", ['pending', 'in_progress', 'approved', 'rejected'])->default('pending');
 
             $table->timestamps();
         });
