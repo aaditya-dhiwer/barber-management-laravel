@@ -21,8 +21,16 @@ RUN a2enmod rewrite
 # copy composer binary from official composer image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+
+
 # set working directory
 WORKDIR /var/www/html
+
+# Set Apache document root to Laravel's public directory
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
 
 # copy app source (the mounted volume in dev will override this)
 COPY . /var/www/html
