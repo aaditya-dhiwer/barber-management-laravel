@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 class PendingVerification extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'email', 'password', 'otp', 'expires_at'];
+    protected $fillable = ['name', 'email', 'password', 'otp', 'expires_at', 'role'];
 
     public function isExpired()
     {

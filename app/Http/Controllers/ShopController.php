@@ -375,7 +375,7 @@ class ShopController extends Controller
     {
         try {
             // Eager load shops and their services with categories
-            $shops = Shop::with(['services.category'])
+            $shops = Shop::where("current_step", 5)->with(['services.category'])
                 ->get();
 
             $formattedShops = [];

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('otp');
+            $table->enum('role', ['customer', 'owner', 'barber']);
             $table->timestamp('expires_at');
             $table->timestamps();
         });
@@ -27,6 +28,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+
+
         Schema::dropIfExists('pending_verifications');
     }
 };

@@ -27,7 +27,7 @@ class AuthController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|unique:users',
                 'password' => 'required|string|min:6',
-                'role' => 'in:owner,customer',
+                'role' => 'required|in:owner,customer',
             ]);
             if ($validation->fails()) {
                 return response()->json([
@@ -46,6 +46,7 @@ class AuthController extends Controller
                     'password'   => bcrypt($request->password),
                     'otp'        => $otp,
                     'expires_at' => now()->addMinutes(10),
+                    'role'       => $request->role,
                 ]
             );
 
@@ -80,7 +81,7 @@ class AuthController extends Controller
                 ->first();
 
             if (!$pending || $pending->isExpired()) {
-                return response()->json(['message' => 'Invalid or expired OTP'], 400);
+                return response()->json(['message' => 'Invalid or expired OTP', 'status' => false], 400);
             }
 
             // Create the actual user now
@@ -88,6 +89,7 @@ class AuthController extends Controller
                 'name' => $pending->name,
                 'email' => $pending->email,
                 'password' => $pending->password,
+                'role' => $pending->role,
                 'email_verified_at' => now(),
             ]);
 

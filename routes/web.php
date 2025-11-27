@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OwnerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +22,10 @@ Route::get('/', function () {
 
 Route::get('/reset-password', [AuthController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'handleReset'])->name('password.update');
+
+
+Route::prefix('admin')->group(function () {
+    Route::get('/owners', [OwnerController::class, 'index'])->name('owners.index');
+    Route::post('/owners/approve/{id}', [OwnerController::class, 'approveShop'])->name('shop.approve');
+    Route::post('/owners/decline/{id}', [OwnerController::class, 'declineShop'])->name('shop.decline');
+});
