@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OwnerController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -24,8 +25,6 @@ Route::get('/reset-password', [AuthController::class, 'showResetForm'])->name('p
 Route::post('/reset-password', [AuthController::class, 'handleReset'])->name('password.update');
 
 
-Route::prefix('admin')->group(function () {
-    Route::get('/owners', [OwnerController::class, 'index'])->name('owners.index');
-    Route::post('/owners/approve/{id}', [OwnerController::class, 'approveShop'])->name('shop.approve');
-    Route::post('/owners/decline/{id}', [OwnerController::class, 'declineShop'])->name('shop.decline');
-});
+Route::get('/admin/shops', [OwnerController::class, 'index'])->name('shops.index');
+Route::post('/admin/shops/{shop}/update-status', [OwnerController::class, 'updateStatus'])->name('shops.updateStatus');
+Route::get('/admin/shops/{shop}', [OwnerController::class, 'show'])->name('shops.show');

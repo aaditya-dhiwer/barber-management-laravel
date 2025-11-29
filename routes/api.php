@@ -24,7 +24,7 @@ Route::post('/owner-login', [AuthController::class, 'ownerLogin']);
 
 Route::get('/services/full_menu', [ServiceController::class, 'getFullMenu']);
 Route::get('/get-all-shops', [ShopController::class, 'getAllShopForUsers']);
-Route::middleware('auth:sanctum')->group(function () {   
+Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::apiResource('/service-category', ServiceCategoryController::class);
@@ -58,5 +58,3 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 // Admin routes will be here in future
-Route::get('/owners', [OwnerController::class, 'getOwners']);
-Route::post('/shop/update-step/{id}', [OwnerController::class, 'updateShopStep']);

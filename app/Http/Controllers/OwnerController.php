@@ -9,25 +9,46 @@ use App\Models\Shop;
 class OwnerController extends Controller
 {
 
-    public function getOwners()
+    public function index(Request $request)
     {
-        $owners = User::where('role', 'owner')
-            ->with([
-                'shops.images',
-                'shops.services.service',
-                'shops.members.user' 
-            ])
+        $statusLabels = [
+            1 => 'Shop Create',
+            2 => 'Service Create',
+            3 => 'Workers Create',
+            5 => 'Approved',
+            6 => 'Declined',
+        ];
+
+        $query = Shop::query();
+
+        if ($request->filter && $request->filter !== 'all') {
+            $query->where('current_step', $request->filter);
+        }
+
+        $shops = $query->orderByRaw("current_step = 4 DESC")
+            ->orderBy('created_at', 'DESC')
             ->get();
 
-        return response()->json($owners);
+        return view('admin.shops.index', compact('shops', 'statusLabels'));
     }
 
-    public function updateShopStep(Request $request, $id)
+    public function updateStatus(Request $request, Shop $shop)
     {
-        $shop = \App\Models\Shop::findOrFail($id);
-        $shop->current_step = $request->status; // 5 for approve, 6 for decline
+        $shop->current_step = $request->status == 'approve' ? 5 : 6;
         $shop->save();
 
-        return response()->json(['message' => 'Status updated successfully']);
+        return redirect()->back()->with('success', 'Shop status updated successfully!');
+    }
+
+    public function show(Shop $shop)
+    {
+        // Assuming relations exist: services, workers, owner (User)
+        $owner = $shop->owner ?? null;  // If you have user relationship
+
+        // $owner = User::find($shop->owner_id) ?? null;
+        $services = $shop->services ?? [];
+        $workers = $shop->members ?? [];
+
+        return view('admin.shops.show', compact('shop', 'owner', 'services', 'workers'));
     }
 }

@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Shop;
+use App\Models\Booking;
+use App\Models\ShopImage;
 
 class User extends Authenticatable
 {
@@ -25,5 +28,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Booking::class, 'customer_id');
     }
-    
+
+    public function images()
+    {
+        return $this->hasMany(ShopImage::class);
+    }
 }
