@@ -24,6 +24,7 @@ class User extends Authenticatable
         return $this->hasMany(Shop::class, 'owner_id');
     }
 
+
     public function bookings()
     {
         return $this->hasMany(Booking::class, 'customer_id');
@@ -32,5 +33,15 @@ class User extends Authenticatable
     public function images()
     {
         return $this->hasMany(ShopImage::class);
+    }
+    public function bookingsForOwner()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+
+    public function details()
+    {
+        return $this->hasMany(BookingDetail::class);
     }
 }

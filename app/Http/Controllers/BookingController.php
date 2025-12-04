@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 use App\Models\ShopService;
-
+use PhpParser\Node\Expr\FuncCall;
 
 class BookingController extends Controller
 {
@@ -397,7 +397,7 @@ class BookingController extends Controller
                         : null,
                     'end_time' => $booking->end_calculated_time
                         ? Carbon::parse($booking->end_calculated_time)->toDateTimeString()
-                        : null, 
+                        : null,
 
                     'total_price' => (float) $booking->total_price,
 
@@ -585,6 +585,77 @@ class BookingController extends Controller
             Log::error('Owner bookings retrieval failed: ' . $th->getMessage());
             return response()->json([
                 'message' => 'Failed to retrieve owner bookings.',
+                'error' => $th->getMessage(),
+                "status" => false,
+            ], 500);
+        }
+    }
+
+    public function updateStatusByUser(Request $request, $bookingId)
+    {
+        try {
+            $user = auth()->user();
+
+            $booking = Booking::find($bookingId);
+            if ($booking->customer_id !== $user->id) {
+                return response()->json(['message' => 'Unauthorized', "status" => false], 403);
+            }
+
+
+            $request->validate([
+                'status' => 'required|in:completed,cancelled_by_customer,customer_not_arrived, rescheduled_by_customer',
+            ]);
+
+            $booking->status = $request->status;
+            $booking->save();
+            $response = [
+                'message' => 'Booking status updated successfully.',
+                'data' => $booking,
+                "status" => true,
+            ];
+
+            return response()->json($response, 200);
+        } catch (\Throwable $th) {
+            Log::error('Booking status update failed: ' . $th->getMessage());
+            return response()->json([
+                'message' => 'Failed to update booking status.',
+                'error' => $th->getMessage(),
+                "status" => false,
+            ], 500);
+        }
+    }
+
+    public function updateStatusByOwner(Request $request, $bookingId)
+    {
+        try {
+            $user = auth()->user();
+            if ($user->role !== 'owner') {
+                return response()->json(['message' => 'Only owners can update bookings', "status" => false], 403);
+            }
+            $shop = Shop::where('owner_id', $user->id)->first();
+            if (!$shop) {
+                return response()->json(['message' => 'Unauthorized', "status" => false], 403);
+            }
+
+            $booking = Booking::find($bookingId);
+            if ($booking->shop_id !== $shop->id) {
+                return response()->json(['message' => 'Unauthorized sdfs', "status" => false], 403);
+            }
+            $request->validate([
+                'status' => 'required|in:confirmed,cancelled_by_owner,customer_not_arrived',
+            ]);
+            $booking->status = $request->status;
+            $booking->save();
+            $response = [
+                'message' => 'Booking status updated successfully.',
+                'data' => $booking,
+                "status" => true,
+            ];
+            return response()->json($response, 200);
+        } catch (\Throwable $th) {
+            Log::error('Booking status update failed: ' . $th->getMessage());
+            return response()->json([
+                'message' => 'Failed to update booking status.',
                 'error' => $th->getMessage(),
                 "status" => false,
             ], 500);

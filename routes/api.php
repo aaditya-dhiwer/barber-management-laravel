@@ -9,6 +9,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ServiceCategoryController;
 use App\Http\Controllers\ShopServiceController;
 use App\Http\Controllers\OwnerController;
+use App\Http\Controllers\OwnerDashboardController;
 
 
 // Route::middleware(['auth:sanctum', 'can:isOwner'])->group(function () {
@@ -44,6 +45,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('/shop-services', ShopServiceController::class);
 
         Route::get('/get-owner-bookings', [BookingController::class, 'getOwnerBookings']);
+
+        Route::post('/update-booking-status-by-owner/{bookingId}', [BookingController::class, 'updateStatusByOwner']);
+
+        Route::get('owner/dashboard', [OwnerDashboardController::class, 'dashboard']);
     });
 
     // Customer routes
@@ -53,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/bookings', [BookingController::class, 'store']);
         Route::get('/get-customer-bookings', [BookingController::class, 'getCustomerBookings']);
     });
+    Route::post('/update-booking-status/{bookingId}', [BookingController::class, 'updateStatusByUser']);
 });
 
 
